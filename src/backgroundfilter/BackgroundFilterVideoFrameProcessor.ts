@@ -50,8 +50,8 @@ export default class BackgroundFilterVideoFrameProcessor {
    * @param queryParams the query parameters to set
    * @returns a new url with the given query parameters.
    */
-  private static createUrlWithParams(url: string, queryParams: { [key: string]: string }): string {
-    const u = new URL(url);
+  private static createUrlWithParams(url: string, queryParams: { [key: string]: string }, urlRewriter: (url: string | null) => string | null): string {
+    const u = urlRewriter ? new URL(urlRewriter(url)) : new URL(url);
     const keys = Object.keys(queryParams);
     for (const key of keys) {
       if (queryParams[key] !== undefined) {
@@ -82,16 +82,17 @@ export default class BackgroundFilterVideoFrameProcessor {
       ua: encodeURIComponent(Versioning.sdkUserAgentLowResolution),
     };
 
-    paths.worker = this.createUrlWithParams(paths.worker, params);
-    paths.wasm = this.createUrlWithParams(paths.wasm, params);
-    paths.simd = this.createUrlWithParams(paths.simd, params);
-    model.path = this.createUrlWithParams(model.path, params);
+    paths.worker = this.createUrlWithParams(paths.worker, params, spec.urlRewriter);
+    paths.wasm = this.createUrlWithParams(paths.wasm, params, spec.urlRewriter);
+    paths.simd = this.createUrlWithParams(paths.simd, params, spec.urlRewriter);
+    model.path = this.createUrlWithParams(model.path, params, spec.urlRewriter);
 
     return {
       paths,
       model,
       assetGroup,
       revisionID,
+      urlRewriter: spec.urlRewriter,
     };
   }
 

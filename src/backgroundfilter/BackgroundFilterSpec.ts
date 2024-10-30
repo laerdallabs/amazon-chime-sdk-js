@@ -24,4 +24,10 @@ export default interface BackgroundFilterSpec extends AssetSpec {
    * segmentation.
    */
   model?: ModelSpec;
+
+  /**
+   * Function to transform URLs. Use this to rewrite URLs to traverse proxies.
+   * The default implementation returns the original URL unchanged.
+   */
+  urlRewriter: (url: string | null) => string | null;
 }
